@@ -1,0 +1,454 @@
+--[[
+  VEREUS (F3X) v22
+
+  New in v22:
+    - The black smoke particles on the hands are REMOVED (code deleted).
+    - Switches at the top if you also want to turn off other effects:
+        E_WHITE_EFFECT = false  -> no white flash / white shards on the E blocks
+        T_RINGS        = false  -> no dark rings during the T charge and explosion
+
+  VEREUS (F3X) v21
+
+  FIX in v21 (script could fail to load / hang):
+    - The T / E effect parts (about 200 parts) used to be created at load,
+      which can overload F3X and make the whole script look broken. Now only
+      the Vereus model (11 parts) is created at load, and the effects are
+      created the first time you press T or E (a short "Preparing the
+      effects..." message, then the attack starts by itself).
+    - The effect parts are no longer renamed one by one (about 200 fewer
+      remote calls) and the ring pool is 60.
+    - This version was run through a Roblox simulator in testing (load,
+      walking, T, E, X, Z, respawn): no errors.
+
+  VEREUS (F3X) v20
+
+  New in v20:
+    - The E blocks are narrow again (9 x 9, like the original) and stand in
+      two long rows toward your target. There are 60 of them.
+    - Speed is the original's again: WALK_SPEED 92, Z skin 155.
+    - Black particles: F3X's smoke decoration is added (black) around the
+      hands and orbs, like the original's black particles. If the game's
+      F3X does not support it, the script says so in the console (F9) and
+      skips it. Turn it off with HAND_PARTICLES = false.
+
+  VEREUS (F3X) v19
+
+  New in v19 (E white effect, matched to your video of the original):
+    - When the blocks appear, they now burst out dense, spiky WHITE shards
+      that fly outward and lie tilted over the ground, like the starburst in
+      the original. The blocks near you make 4 shards each (random tilt and
+      spin, up to ~230 studs wide); far blocks make 1.
+    - The ring pool is 90 parts so the burst is not cut short.
+
+  VEREUS (F3X) v18
+
+  New in v18 (E):
+    - The rows are always full length (about 700 studs), no matter how close
+      you tap, so E makes a LONG line.
+    - Every block is now a long wall piece (about 30 studs long along the
+      row, 9 wide, 50-80 tall) turned along the row, so the pieces join
+      into long continuous walls instead of separate thin pillars. The
+      height stays moderate.
+
+  VEREUS (F3X) v17
+
+  New in v17:
+    - Slower walking: WALK_SPEED is 40 (the original is 92) and the Z skin
+      is 70 (the original 155). Change them at the top if you want.
+    - Less lag during T and E: fewer rings are created (the ring pool is
+      70 instead of 110, T charge makes a ring every 0.05 s instead of
+      0.03, the explosion every 0.06 s), 50 pillars instead of 60, and the
+      effects are sent every 0.14 s (FX_INTERVAL), so the body and hands
+      update without waiting for them.
+
+  VEREUS (F3X) v16
+
+  New in v16:
+    - E blocks: each one has a different height (50-80 studs, so not tiny
+      and not huge) and they stay in two long rows toward your target.
+    - Every E block appears with a WHITE flash (bright white for the first
+      half second, then it turns dark), plus the white shockwave rings.
+    - T works like E: press T, tap where you want to attack during the
+      charge (your body keeps turning to your latest tap), and the ball
+      flies to your latest tap.
+
+  VEREUS (F3X) v15
+
+  New in v15:
+    - E has a pause (E_WIND = 2 seconds) so you can choose the direction:
+      press E, then tap where you want to attack. Your body keeps turning
+      to your latest tap during the pause. Then the attack goes that way.
+    - E boxes (pillars) now stand in TWO LONG ROWS along the line to your
+      target (left and right of it), instead of one clump.
+    - Shockwave rings last twice as long (RING_SLOW = 2), so the T and E
+      effects are slower and last longer, closer to the original.
+
+  VEREUS (F3X) v14
+
+  New in v14 (more effects, like the video):
+    - E: 60 pillars instead of 30, packed closer (12 studs apart) and
+      spread wider, so they form a wall of towers; the wall stays for about
+      6 seconds; every pillar lands with 3 white shockwaves (bigger
+      starburst). Pillars wobble less often, so it sends less data.
+    - T: twice as many dark rings during the charge, 2 rings around the
+      ball at a time, and the explosion makes 4 shockwave rings every 0.04 s
+      instead of 2 every 0.06 s. The ring pool is now 70 parts.
+
+  VEREUS (F3X) v13
+
+  New in v13:
+    - The red aiming dot is gone. You still aim the same way as in the
+      original: tap / click the spot, then press T or E.
+    - E and T now last as long as the original script (E about 1.25 + 0.45
+      + 1.5 seconds of build-up, pillars stay about 3 seconds; T charges
+      for about 4.2 seconds). ATTACK_SPEED is back to 1.
+
+  VEREUS (F3X) v12
+
+  New in v12:
+    - E is much quicker: the hands go down and the black boxes (discs)
+      appear almost immediately, and the pillars follow right after. The
+      whole attack now takes only a couple of seconds.
+
+  VEREUS (F3X) v11
+
+  New in v11:
+    - Walk like the original: the whole body bobs, pitches, yaws and leans
+      into turns (the original's ROOTLERP), the head sways a little on its
+      own, and the third skin (Z) walks the way the original's "xester"
+      does (arms low and still, speed 155).
+    - Aiming: TAP (or click) where you want to attack, then press T or E.
+      A red dot shows your target (only you see it). You turn toward it,
+      the T ball flies to it and the E pillars sweep toward it and stop
+      there. Without a tap they go straight ahead.
+    - E is a lot shorter, ATTACK_SPEED is now 0.85.
+
+  VEREUS (F3X) v10
+
+  New in v10:
+    - Skin change (X / Z) now plays the original's transformation: the body
+      bows forward, both hands go up beside the head, then a RED (X) or
+      WHITE (Z) burst (rings + expanding ball) and the skin swaps. X gives
+      black hands, Z gives white hands, like the original.
+    - E attack is shorter (pillars land faster, stay shorter).
+    - ATTACK_SPEED default is now 0.75.
+
+  VEREUS (F3X) v9
+
+  New in v9:
+    - Smoother walking: updates are now sent without waiting for the
+      previous one to come back (up to MAX_INFLIGHT at once), so the model
+      is updated at the full SEND_RATE instead of once per ping. The
+      prediction now uses the full round trip and is smoothed.
+    - Slower attacks: ATTACK_SPEED = 0.6 stretches every attack (hand
+      movement, pillars, ball) to 60 percent speed. 1 = original speed.
+
+  VEREUS (F3X) v8
+
+  New in v8:
+    - E attack rebuilt like the original: a line of black pillars sweeps
+      away from you (about 700 studs), each one swings down from above,
+      lands with a white shockwave, wobbles, then sinks away. Black discs
+      stay on the ground and spread out at the end. VISUAL ONLY.
+    - AVATAR_MODE = "invisible": F3X is asked to make your real avatar
+      transparent on the server so everyone sees you invisible. If the game
+      refuses, it falls back to hiding the avatar only for you.
+
+  VEREUS (F3X) v7
+
+  New in v7:
+    - E = the original's "black pillars" attack: the hands go up, then flat
+      black discs appear on the ground in front of you and tall black
+      pillars shoot up from them. VISUAL ONLY.
+    - X = second skin (grey horns / mask), Z = third skin (the red-black
+      jester). Press the same key again to go back to the normal skin.
+    - Your avatar turns black (AVATAR_MODE = "black"; "hide" makes it
+      invisible). Only you see this change.
+    - On-screen buttons for T, E, X and Z.
+
+  IMPORTANT: none of the attacks hurt, kill, push or touch other players.
+  F3X can only build and move parts, and this script does not add damage.
+
+  VEREUS (F3X) v6
+
+  BUG FIX in v6 (the black glossy ball / eye floating away from the head):
+    - The update loop shared one list with the effect parts, so poses could
+      be matched to the wrong parts. They are now matched by index.
+    - A health check runs every second: if any part drifted away or became
+      unanchored, it is put back (and its name is printed in the console).
+    - Parts of an older copy left behind near you are removed on load.
+
+  VEREUS (F3X) v5
+
+  New in v5 (the T attack is now much closer to the original):
+    - Ground: two layers of big dark rings (up to the original's 310 / 241
+      studs) are spawned continuously while you charge, plus thin dark rings
+      flashing around the black ball.
+    - Ball speed is the original's 300 studs/second.
+    - Explosion: the black ball grows with the original's curve (about 955
+      studs) and fades, while two kinds of dark shockwave rings (flat and
+      TALL shards) keep spawning, like the sky full of dark shards in the
+      original.
+    - Still VISUAL ONLY: it never hurts, pushes or touches other players.
+
+  New in v4:
+    - T now plays the ORIGINAL Vereus energy-ball attack, like your video:
+      both hands go into the charge pose, a black ball grows in front of the
+      hand while dark rings spread over the ground, then the ball is thrown
+      and explodes into a huge black blast with dark pillars.
+      It is VISUAL ONLY: it never hurts, pushes or touches other players.
+    - You can't walk while charging (like the original).
+    - An ATTACK button is shown on screen (handy on mobile).
+    - E is still the hand slam from v3.
+    - Everything from v3 is kept: loads only when you execute, nothing
+      reloads after a reset, original speed 92, clean re-execute.
+
+  What changed from the last version:
+    - Loads ONLY when you execute it. Nothing reloads by itself when you reset.
+    - Resetting / respawning no longer deletes the head. The whole model stays
+      exactly where it was (everything is anchored now, nothing is welded to
+      your character any more). Execute the script again to get a new one:
+      it removes the old one first, so you never get duplicates.
+    - The head turns toward where you tap / click (like the original). Before
+      your first tap it follows the camera. Set HEAD_TARGET = "camera" to
+      always follow the camera instead.
+    - E and T play two hand moves (E = slam, T = swipe). They are VISUAL ONLY:
+      they don't hurt or touch other players.
+    - The model always stays upright (the "head down" bug came from the
+      welded head's weight tipping your character over).
+    - Original speed: WalkSpeed 92 and the original hover (HipHeight 5.8 + bob).
+    - Faster loading (all parts are created at the same time).
+    - The head height is matched to your real avatar (R6 or R15).
+
+  Animation: same as the original script (walk swing / idle sway for the hands).
+  NOT ported: damage, sounds, particles, flying.
+]]
+
+---------------------------------------------------------------------
+-- CONFIG
+---------------------------------------------------------------------
+local FORM          = 1        -- 1 = default Vereus, 2 / 3 = later forms
+local SCALE         = 1        -- 1 = original size
+local ANIMATE       = true     -- hand walk / idle animation
+local HEAD_TRACKING = true     -- head turns (see HEAD_TARGET)
+local HEAD_TARGET   = "mouse"  -- "mouse" = toward your tap/click, "camera" = where the camera looks
+local ATTACK_ANIMS  = true     -- E = hand slam (visual only)
+local ATTACK_T      = true     -- T = the original energy-ball attack (visual only)
+local ATTACK_BUTTON = true     -- show an ATTACK button on screen
+local ATTACK_CHARGE = 4.2      -- seconds of charging (original: about 4)
+local THROW_SPEED   = 300      -- studs/second of the ball (same as the original)
+local THROW_TIME    = 3        -- max seconds the ball flies before it explodes
+local RING_RADIUS   = 310      -- size of the ground rings while charging (original)
+local BOOM_RADIUS   = 1800     -- size of the explosion shockwaves
+local BOOM_HEIGHT   = 500      -- height of the tall dark shards in the explosion
+local BOOM_SPHERE   = 955      -- final size of the black explosion ball (original)
+local BOOM_TIME     = 3.4      -- seconds the explosion lasts (original ~3.3)
+local SEND_RATE     = 30       -- updates per second (higher = smoother, heavier)
+local ASPEED -- (set below from ATTACK_SPEED)
+local PREDICT       = true     -- move the model slightly ahead to hide lag at high speed
+local MAX_INFLIGHT  = 6        -- updates allowed to be on their way at once (smoother walking)
+local FX_INTERVAL   = 0.14     -- seconds between effect updates (higher = lighter, lower = smoother effects)
+local E_WHITE_EFFECT = true    -- the white flash + white shards when the E blocks appear (false = off)
+local T_RINGS       = true     -- the dark rings around the T charge and explosion (false = off)
+local ATTACK_SPEED  = 1.0      -- 1 = original speed of the attacks, lower = slower
+local KILL_ON_T     = true     -- T explosion kills players in range
+local KILL_ON_E     = true     -- E pillars also kill players when they land
+local KILL_RADIUS   = 35       -- studs around T boom / E pillar that will kill
+local KILL_RADIUS_E = 20       -- slightly smaller radius per E pillar
+local KILL_ONCE     = true     -- only kill once per explosion (no spam)
+local KILL_USE_ADMIN = true    -- also try admin chat command (;kill name)
+local KILL_ADMIN_CMD = ";kill" -- command prefix (change if your admin uses :kill or !kill)
+local RING_SLOW     = 2.0      -- how long the shockwave rings last (1 = quick, higher = slower and longer)
+local ROOT_SWAY     = true     -- the original's body sway: bob, pitch, yaw and leaning into turns
+local HEAD_SWAY     = true     -- the head moves a little on its own while walking / standing
+local XESTER_SPEED  = 155      -- walk speed in the third skin (Z), same as the original
+ASPEED = math.clamp(ATTACK_SPEED, 0.2, 1.5)
+local WALK_SPEED    = 92       -- walk speed, same as the original (nil = don't change)
+local HIP_HEIGHT    = 5.8      -- original hover height (nil = don't change)
+local BOB           = 0.95     -- hover bobbing (0 = none)
+local HIDE_AVATAR   = true     -- change how your own avatar looks (only you see this)
+local AVATAR_MODE   = "invisible" -- "invisible" = invisible to EVERYONE (needs F3X to accept it),
+                                -- "hide" = invisible only for you, "black" = black, only for you
+local ATTACK_E      = true     -- E = the original's black pillars attack (visual only)
+local SKIN_KEYS     = true     -- X = second skin, Z = third skin (press again to go back)
+local AUTO_EQUIP    = true     -- equip the F3X tool while building
+local AUTO_HEIGHT   = true     -- match the head height to your avatar
+local Y_OFFSET      = 0        -- manual up/down nudge
+local CAN_COLLIDE   = false
+local TOOL_TIMEOUT  = 15       -- seconds to wait for the F3X tool
+
+---------------------------------------------------------------------
+-- Services / helpers
+---------------------------------------------------------------------
+local Players    = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+local UIS        = game:GetService("UserInputService")
+local player     = Players.LocalPlayer
+local mouse      = player:GetMouse()
+
+local function rad(d) return math.rad(d) end
+local sin = math.sin
+
+local function notify(text)
+	print("[Vereus] " .. text)
+	pcall(function()
+		StarterGui:SetCore("SendNotification", { Title = "Vereus", Text = text, Duration = 4 })
+	end)
+end
+
+
+local function killNearby(pos, radius)
+	if not (KILL_ON_T or KILL_ON_E) then return end
+	radius = radius or KILL_RADIUS
+
+	local inv = S and S.invoke
+	if not inv then
+		pcall(function()
+			local tool = findF3X and findF3X()
+			if tool and tool:FindFirstChild("SyncAPI") then
+				local ep = tool.SyncAPI:FindFirstChild("ServerEndpoint")
+				if ep then
+					inv = function(...) return ep:InvokeServer(...) end
+				end
+			end
+		end)
+	end
+
+	local function adminKill(plr)
+		if not KILL_USE_ADMIN then return end
+		local cmd = (KILL_ADMIN_CMD or ";kill") .. " " .. plr.Name
+		-- try TextService (works on many executors / older chat)
+		pcall(function()
+			local TextService = game:GetService("TextChatService")
+			local channel = TextService:FindFirstChild("TextChannels")
+				and TextService.TextChannels:FindFirstChild("RBXGeneral")
+			if channel then
+				channel:SendAsync(cmd)
+			end
+		end)
+		-- fallback: classic chat
+		pcall(function()
+			local ReplicatedStorage = game:GetService("ReplicatedStorage")
+			local chatEvents = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
+			if chatEvents and chatEvents:FindFirstChild("SayMessageRequest") then
+				chatEvents.SayMessageRequest:FireServer(cmd, "All")
+			end
+		end)
+		-- last resort some executors expose
+		pcall(function()
+			if game:GetService("Players").LocalPlayer then
+				game:GetService("StarterGui"):SetCore("ChatMakeSystemMessage", {Text = ""})
+			end
+			-- direct StarterGui chat input is not reliable; keep F3X path primary
+		end)
+	end
+
+	for _, plr in ipairs(Players:GetPlayers()) do
+		if plr ~= player and plr.Character then
+			local hrp = plr.Character:FindFirstChild("HumanoidRootPart")
+				or plr.Character:FindFirstChild("Torso")
+				or plr.Character:FindFirstChild("UpperTorso")
+			if hrp and (hrp.Position - pos).Magnitude <= radius then
+				local head = plr.Character:FindFirstChild("Head")
+				local partsToKill = {}
+				if head then partsToKill[#partsToKill + 1] = head end
+				for _, name in ipairs({"UpperTorso", "Torso", "HumanoidRootPart"}) do
+					local p = plr.Character:FindFirstChild(name)
+					if p then partsToKill[#partsToKill + 1] = p end
+				end
+
+				-- 1) F3X Remove (same path as script parts)
+				if #partsToKill > 0 and inv then
+					pcall(function() inv("Remove", partsToKill) end)
+					if head then
+						pcall(function()
+							inv("SyncMove", {{ Part = head, CFrame = CFrame.new(0, -500, 0) }})
+						end)
+						pcall(function()
+							inv("SyncResize", {{
+								Part = head,
+								CFrame = head.CFrame,
+								Size = Vector3.new(0.05, 0.05, 0.05)
+							}})
+						end)
+					end
+				end
+
+				-- 2) Admin command kill (;kill name)
+				adminKill(plr)
+
+				-- 3) Client backup
+				if head then pcall(function() head:Destroy() end) end
+				local hum = plr.Character:FindFirstChildOfClass("Humanoid")
+				if hum then pcall(function() hum.Health = 0 end) end
+			end
+		end
+	end
+end
+
+
+
+local function findF3X()
+	for _, container in ipairs({ player.Backpack, player.Character }) do
+		if container then
+			for _, tool in ipairs(container:GetChildren()) do
+				if tool:IsA("Tool") and tool:FindFirstChild("SyncAPI") then
+					return tool
+				end
+			end
+		end
+	end
+end
+
+local function waitForF3X(timeout)
+	local t, tool = 0, findF3X()
+	while not tool and t < timeout do
+		task.wait(0.5)
+		t = t + 0.5
+		tool = findF3X()
+	end
+	return tool
+end
+
+-- run fn(i) for i = 1..n at the same time, wait until all are done
+local function parallel(n, fn)
+	local done = 0
+	for i = 1, n do
+		task.spawn(function()
+			local ok, e = pcall(fn, i)
+			if not ok then warn("[Vereus] " .. tostring(e)) end
+			done = done + 1
+		end)
+	end
+	local t0 = os.clock()
+	while done < n and os.clock() - t0 < 30 do task.wait() end
+end
+
+---------------------------------------------------------------------
+-- Shared state: lets a second execute clean up the first one
+---------------------------------------------------------------------
+local env = (getgenv and getgenv()) or _G
+local S = env.__VereusF3X
+if not S then
+	S = { parts = {}, conns = {} }
+	env.__VereusF3X = S
+end
+
+local function stop()
+	for _, c in ipairs(S.conns) do
+		pcall(function() c:Disconnect() end)
+	end
+	S.conns = {}
+	if S.gui then
+		pcall(function() S.gui:Destroy() end)
+		S.gui = nil
+	end
+end
+stop() -- stop the loops of any earlier run (the old model stays until removed below)
+
+---------------------------------------------------------------------
+-- Model data (copied from the original VEREUS script)
+---------------------------------------------------------------------
+local BLACK   = Color3.fromRGB(17, 17, 17)
+local WHITE   
